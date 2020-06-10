@@ -1,0 +1,16 @@
+com\ibotta\anagram\rest\AnagramController.class
+com\ibotta\anagram\repository\EnglishWordRepository.class
+com\ibotta\anagram\AnagramApplication.class
+com\ibotta\anagram\model\EnglishWord.class
+com\ibotta\anagram\service\AnagramService.class
+com\ibotta\anagram\domain\WordMetric.class
+com\ibotta\anagram\service\InvalidWordException.class
+com\ibotta\anagram\domain\CreateAnagramDigest.class
+com\ibotta\anagram\domain\AnagramDigest.class
+com\ibotta\anagram\service\AnagramException.class
+com\ibotta\anagram\util\AnagramUtil.class
+com\ibotta\anagram\repository\AnagramGroupRepository.class
+com\ibotta\anagram\domain\AnagramMetric.class
+com\ibotta\anagram\rest\AnagramExceptionAdvice.class
+com\ibotta\anagram\model\AnagramGroup.class
+com\ibotta\anagram\service\AnagramServiceImpl.class
