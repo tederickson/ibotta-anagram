@@ -121,4 +121,4 @@ The [design documentation](documentation/Design.md) is found in the documentatio
 # Deliverable
 ---
 
-Please provide the code for the assignment either in a private repository (GitHub or Bitbucket) or as a zip file. If you have a deliverable that is deployed on the web please provide a link, otherwise give us instructions for running it locally.
+Please provide the code for the assignment either in a repository (GitHub or Bitbucket) or as a zip file. If you have a deliverable that is deployed on the web please provide a link, otherwise give us instructions for running it locally.
