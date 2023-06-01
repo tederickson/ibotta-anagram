@@ -1,19 +1,5 @@
 package com.ibotta.anagram.service;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
-
 import com.ibotta.anagram.domain.AnagramMetric;
 import com.ibotta.anagram.domain.WordMetric;
 import com.ibotta.anagram.exception.AnagramException;
@@ -23,191 +9,202 @@ import com.ibotta.anagram.model.EnglishWord;
 import com.ibotta.anagram.repository.AnagramGroupRepository;
 import com.ibotta.anagram.repository.EnglishWordRepository;
 import com.ibotta.anagram.util.AnagramUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class AnagramServiceImpl implements AnagramService {
-	@Autowired
-	private EnglishWordRepository englishWordRepository;
-	@Autowired
-	private AnagramGroupRepository anagramGroupRepository;
+    private final static Set<String> DICTIONARY = new HashSet<>();
+    @Value("classpath:static/dictionary.txt")
+    Resource dictionary;
+    @Autowired
+    private EnglishWordRepository englishWordRepository;
+    @Autowired
+    private AnagramGroupRepository anagramGroupRepository;
 
-	@Value("classpath:static/dictionary.txt")
-	Resource dictionary;
+    @Override
+    public void addWords(List<String> words) throws AnagramException {
+        if (words.isEmpty()) {
+            throw new AnagramException("empty list of words");
+        }
 
-	private final static Set<String> DICTIONARY = new HashSet<String>();
+        for (String word : words) {
+            validateEnglishWord(word);
+            if (!englishWordRepository.findById(word).isPresent()) {
+                englishWordRepository.save(new EnglishWord(word));
+            }
+        }
+    }
 
-	@Override
-	public void addWords(List<String> words) throws AnagramException {
-		if (words.isEmpty()) {
-			throw new AnagramException("empty list of words");
-		}
+    @Override
+    public List<String> findAnagrams(String word, boolean allowProperNoun) throws AnagramException {
+        validateEnglishWord(word);
+        String key = AnagramUtil.createKey(word);
+        List<EnglishWord> anagrams = englishWordRepository.findByAnagramKey(key);
+        List<String> words = new ArrayList<>();
 
-		for (String word : words) {
-			validateEnglishWord(word);
-			if (!englishWordRepository.findById(word).isPresent()) {
-				englishWordRepository.save(new EnglishWord(word));
-			}
-		}
-	}
+        anagrams.forEach(entity -> {
+            String dbWord = entity.getWord();
+            if (!word.equals(dbWord)) {
+                if (allowProperNoun) {
+                    words.add(dbWord);
+                } else if (dbWord.equals(dbWord.toLowerCase())) {
+                    words.add(dbWord);
+                }
+            }
+        });
 
-	@Override
-	public List<String> findAnagrams(String word, boolean allowProperNoun) throws AnagramException {
-		validateEnglishWord(word);
-		String key = AnagramUtil.createKey(word);
-		List<EnglishWord> anagrams = englishWordRepository.findByAnagramKey(key);
-		List<String> words = new ArrayList<>();
+        return words;
+    }
 
-		anagrams.forEach(entity -> {
-			String dbWord = entity.getWord();
-			if (!word.equals(dbWord)) {
-				if (allowProperNoun) {
-					words.add(dbWord);
-				} else if (dbWord.equals(dbWord.toLowerCase())) {
-					words.add(dbWord);
-				}
-			}
-		});
+    @Override
+    public void remove(String word) {
+        if (englishWordRepository.findById(word).isPresent()) {
+            englishWordRepository.deleteById(word);
+        }
+    }
 
-		return words;
-	}
+    @Override
+    public void removeAll() {
+        englishWordRepository.deleteAll();
+    }
 
-	@Override
-	public void remove(String word) {
-		if (englishWordRepository.findById(word).isPresent()) {
-			englishWordRepository.deleteById(word);
-		}
-	}
+    @Override
+    public void removeAllAnagramsOf(String word) {
+        String key = AnagramUtil.createKey(word);
+        List<EnglishWord> anagrams = englishWordRepository.findByAnagramKey(key);
 
-	@Override
-	public void removeAll() {
-		englishWordRepository.deleteAll();
-	}
+        if (!anagrams.isEmpty()) {
+            englishWordRepository.deleteInBatch(anagrams);
+        }
+    }
 
-	@Override
-	public void removeAllAnagramsOf(String word) {
-		String key = AnagramUtil.createKey(word);
-		List<EnglishWord> anagrams = englishWordRepository.findByAnagramKey(key);
+    @Override
+    public WordMetric retrieveWordMetrics() {
+        WordMetric metric = new WordMetric();
+        List<Integer> lengths = new ArrayList<>();
 
-		if (!anagrams.isEmpty()) {
-			englishWordRepository.deleteInBatch(anagrams);
-		}
-	}
+        for (EnglishWord word : englishWordRepository.findAll()) {
+            lengths.add(word.getWord().length());
+        }
+        if (!lengths.isEmpty()) {
+            final int count = lengths.size();
+            Collections.sort(lengths);
 
-	@Override
-	public WordMetric retrieveWordMetrics() {
-		WordMetric metric = new WordMetric();
-		List<Integer> lengths = new ArrayList<>();
+            metric.setCount(count);
+            metric.setMin(lengths.get(0));
+            metric.setMax(lengths.get(count - 1));
 
-		for (EnglishWord word : englishWordRepository.findAll()) {
-			lengths.add(word.getWord().length());
-		}
-		if (!lengths.isEmpty()) {
-			final int count = lengths.size();
-			Collections.sort(lengths);
+            final float total = lengths.stream().reduce(0, Integer::sum);
+            metric.setAverage(total / count);
 
-			metric.setCount(count);
-			metric.setMin(lengths.get(0));
-			metric.setMax(lengths.get(count - 1));
+            int middle = count / 2;
 
-			final float total = lengths.stream().reduce(0, Integer::sum);
-			metric.setAverage(total / count);
+            if (count % 2 == 1) {
+                metric.setMedian(lengths.get(middle));
+            } else {
+                // Average the two middle entries
+                int left = lengths.size() / 2;
+                int right = left + 1;
+                float combinedMiddle = lengths.get(left) + lengths.get(right);
 
-			int middle = count / 2;
+                metric.setMedian(combinedMiddle / 2f);
+            }
+        }
 
-			if (count % 2 == 1) {
-				metric.setMedian(lengths.get(middle));
-			} else {
-				// Average the two middle entries
-				int left = lengths.size() / 2;
-				int right = left + 1;
-				float combinedMiddle = lengths.get(left) + lengths.get(right);
+        return metric;
+    }
 
-				metric.setMedian(combinedMiddle / 2f);
-			}
-		}
+    @Override
+    public boolean areSameAnagram(List<String> words) throws AnagramException {
+        String anagramKey = AnagramUtil.createKey(words.get(0));
 
-		return metric;
-	}
+        for (String word : words) {
+            validateEnglishWord(word);
+            if (!anagramKey.equals(AnagramUtil.createKey(word))) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	@Override
-	public boolean areSameAnagram(List<String> words) throws AnagramException {
-		String anagramKey = AnagramUtil.createKey(words.get(0));
+    @Override
+    public List<AnagramMetric> mostAnagrams() {
+        List<AnagramMetric> metrics = new ArrayList<>();
+        List<AnagramGroup> groups = anagramGroupRepository.findAll();
+        int max = 0;
 
-		for (String word : words) {
-			validateEnglishWord(word);
-			if (!anagramKey.equals(AnagramUtil.createKey(word))) {
-				return false;
-			}
-		}
-		return true;
-	}
+        for (AnagramGroup group : groups) {
+            if (max < group.getAnagramCount()) {
+                max = group.getAnagramCount();
+            }
+        }
 
-	@Override
-	public List<AnagramMetric> mostAnagrams() {
-		List<AnagramMetric> metrics = new ArrayList<>();
-		List<AnagramGroup> groups = anagramGroupRepository.findAll();
-		int max = 0;
+        for (AnagramGroup group : groups) {
+            if (max == group.getAnagramCount()) {
+                metrics.add(buildAnagramMetric(group));
+            }
+        }
 
-		for (AnagramGroup group : groups) {
-			if (max < group.getAnagramCount()) {
-				max = group.getAnagramCount();
-			}
-		}
+        return metrics;
+    }
 
-		for (AnagramGroup group : groups) {
-			if (max == group.getAnagramCount()) {
-				metrics.add(buildAnagramMetric(group));
-			}
-		}
+    @Override
+    public List<AnagramMetric> anagramsWithAtLeast(int count) {
+        List<AnagramMetric> metrics = new ArrayList<>();
 
-		return metrics;
-	}
+        for (AnagramGroup group : anagramGroupRepository.findAll()) {
+            if (group.getAnagramCount() >= count) {
+                metrics.add(buildAnagramMetric(group));
+            }
+        }
 
-	@Override
-	public List<AnagramMetric> anagramsWithAtLeast(int count) {
-		List<AnagramMetric> metrics = new ArrayList<>();
+        return metrics;
+    }
 
-		for (AnagramGroup group : anagramGroupRepository.findAll()) {
-			if (group.getAnagramCount() >= count) {
-				metrics.add(buildAnagramMetric(group));
-			}
-		}
+    private AnagramMetric buildAnagramMetric(AnagramGroup group) {
+        List<EnglishWord> anagrams = englishWordRepository.findByAnagramKey(group.getAnagramKey());
 
-		return metrics;
-	}
+        AnagramMetric metric = new AnagramMetric();
+        metric.setWord(anagrams.get(0).getWord());
+        metric.setCount(group.getAnagramCount());
 
-	private AnagramMetric buildAnagramMetric(AnagramGroup group) {
-		List<EnglishWord> anagrams = englishWordRepository.findByAnagramKey(group.getAnagramKey());
+        return metric;
+    }
 
-		AnagramMetric metric = new AnagramMetric();
-		metric.setWord(anagrams.get(0).getWord());
-		metric.setCount(group.getAnagramCount());
+    // Ensure thread-safe access to the dictionary. Prevent a thread accessing
+    // the dictionary while another thread is creating the dictionary
+    private synchronized void validateEnglishWord(String text) throws AnagramException {
+        if (DICTIONARY.isEmpty()) {
+            initializeDictionary();
+        }
 
-		return metric;
-	}
+        if (!DICTIONARY.contains(text)) {
+            throw new InvalidWordException("invalid English word [" + text + "]");
+        }
+    }
 
-	// Ensure thread-safe access to the dictionary. Prevent a thread accessing
-	// the dictionary while another thread is creating the dictionary
-	private synchronized void validateEnglishWord(String text) throws AnagramException {
-		if (DICTIONARY.isEmpty()) {
-			initializeDictionary();
-		}
+    private void initializeDictionary() throws AnagramException {
+        try (BufferedReader in = new BufferedReader(new FileReader(dictionary.getFile()))) {
+            String text = in.readLine();
 
-		if (!DICTIONARY.contains(text)) {
-			throw new InvalidWordException("invalid English word [" + text + "]");
-		}
-	}
-
-	private void initializeDictionary() throws AnagramException {
-		try (BufferedReader in = new BufferedReader(new FileReader(dictionary.getFile()))) {
-			String text = in.readLine();
-
-			while (text != null) {
-				DICTIONARY.add(text);
-				text = in.readLine();
-			}
-		} catch (IOException e) {
-			throw new AnagramException("unable to read dictionary", e);
-		}
-	}
+            while (text != null) {
+                DICTIONARY.add(text);
+                text = in.readLine();
+            }
+        } catch (IOException e) {
+            throw new AnagramException("unable to read dictionary", e);
+        }
+    }
 }

@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class AnagramMetric {
-	private String word;
-	private int count;
+    private String word;
+    private int count;
 }
