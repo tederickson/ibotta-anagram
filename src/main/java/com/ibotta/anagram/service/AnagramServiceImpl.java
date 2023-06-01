@@ -41,7 +41,7 @@ public class AnagramServiceImpl implements AnagramService {
 
         for (String word : words) {
             validateEnglishWord(word);
-            if (!englishWordRepository.findById(word).isPresent()) {
+            if (englishWordRepository.findById(word).isEmpty()) {
                 englishWordRepository.save(new EnglishWord(word));
             }
         }

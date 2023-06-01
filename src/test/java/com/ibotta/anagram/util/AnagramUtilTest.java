@@ -1,10 +1,10 @@
 package com.ibotta.anagram.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.ibotta.anagram.exception.AnagramException;
+import com.ibotta.anagram.exception.InvalidWordException;
 import org.junit.jupiter.api.Test;
 
 public class AnagramUtilTest {
@@ -32,12 +32,14 @@ public class AnagramUtilTest {
     }
 
     @Test
-    public void testCreateKeyWithNull() throws AnagramException {
-        try {
-            AnagramUtil.createKey(null);
-            fail("expected a null pointer exception");
-        } catch (NullPointerException e) {
-            assertNotNull(e);
-        }
+    public void testCreateKeyWithNull() {
+        assertThrows(InvalidWordException.class,
+                () -> AnagramUtil.createKey(null));
+    }
+
+    @Test
+    public void testCreateKeyWithTooManyDuplicates() {
+        assertThrows(AnagramException.class,
+                () -> AnagramUtil.createKey("aaaaaaaaaaaaaaaaaaaaaaaaa"));
     }
 }

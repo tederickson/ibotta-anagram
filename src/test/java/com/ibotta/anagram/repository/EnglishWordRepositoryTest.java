@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.ibotta.anagram.model.EnglishWord;
@@ -36,27 +35,27 @@ public class EnglishWordRepositoryTest {
 
     @Test
     public void testFindByKey() throws Exception {
-        List<EnglishWord> anagrams = englishWordRepository.findByAnagramKey(APPLE_KEY);
+        var anagrams = englishWordRepository.findByAnagramKey(APPLE_KEY);
 
         assertNotNull(anagrams);
         assertTrue(anagrams.isEmpty());
 
-        EnglishWord word = new EnglishWord("apple");
-        EnglishWord dbEntity = englishWordRepository.save(word);
+        final var word = new EnglishWord("apple");
+        final var dbEntity = englishWordRepository.save(word);
 
         assertNotNull(dbEntity);
 
         anagrams = englishWordRepository.findByAnagramKey(APPLE_KEY);
-        assertTrue(anagrams.size() == 1);
+        assertEquals(1, anagrams.size());
         assertEquals(dbEntity, anagrams.get(0));
     }
 
     @Test
     public void testFindAll() throws Exception {
-        List<EnglishWord> anagrams = englishWordRepository.findAll();
+        var anagrams = englishWordRepository.findAll();
         assertTrue(anagrams.isEmpty());
 
-        EnglishWord word = new EnglishWord("apple");
+        final var word = new EnglishWord("apple");
         englishWordRepository.save(word);
 
         anagrams = englishWordRepository.findAll();
@@ -64,24 +63,21 @@ public class EnglishWordRepositoryTest {
         assertEquals(APPLE_KEY, anagrams.get(0).getAnagramKey());
     }
 
-    @Test
+
     /**
      * Verify all words have the same key. Verify all words are saved. Verify all
      * words are unique.
      */
-    public void testSaveAllIterableOfS() throws Exception {
-        List<EnglishWord> entities = new ArrayList<>();
+    @Test
+    public void testSaveAllPermutationsOfWord() throws Exception {
+        final var entities = List.of(new EnglishWord("apple"),
+                new EnglishWord("APPLE"),
+                new EnglishWord("alppe"),
+                new EnglishWord("leapp"));
 
-        entities.add(new EnglishWord("apple"));
-        entities.add(new EnglishWord("APPLE"));
-        entities.add(new EnglishWord("alppe"));
-        entities.add(new EnglishWord("leapp"));
+        entities.forEach(it -> assertEquals(APPLE_KEY, it.getAnagramKey()));
 
-        entities.forEach(it -> {
-            assertEquals(APPLE_KEY, it.getAnagramKey());
-        });
-
-        List<EnglishWord> rows = englishWordRepository.saveAll(entities);
+        var rows = englishWordRepository.saveAll(entities);
 
         assertEquals(rows.size(), entities.size());
 
@@ -95,8 +91,9 @@ public class EnglishWordRepositoryTest {
             englishWordRepository.save(new EnglishWord("apple"));
         }
 
-        List<EnglishWord> anagrams = englishWordRepository.findAll();
+        final var anagrams = englishWordRepository.findAll();
         assertEquals(1, anagrams.size());
+        assertEquals("apple", anagrams.get(0).getWord());
     }
 
     @Test
