@@ -5,7 +5,7 @@
 	
 	<groupId>com.ibotta</groupId>
 	<artifactId>anagram</artifactId>
-	<version>0.0.6</version>
+	<version>0.1.0</version>
 	<name>anagram</name>
 	<description>Demo Anagram project for Spring Boot</description>
 	
@@ -17,7 +17,7 @@
 	</parent>
 	
 	<properties>
-		<java.version>1.8</java.version>
+		<java.version>14</java.version>
 	</properties>
 
 	<dependencies>
