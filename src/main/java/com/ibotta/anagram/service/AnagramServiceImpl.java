@@ -1,5 +1,14 @@
 package com.ibotta.anagram.service;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.ibotta.anagram.domain.AnagramMetric;
 import com.ibotta.anagram.domain.WordMetric;
 import com.ibotta.anagram.exception.AnagramException;
@@ -13,15 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Service
 public class AnagramServiceImpl implements AnagramService {
@@ -81,7 +81,7 @@ public class AnagramServiceImpl implements AnagramService {
     }
 
     @Override
-    public void removeAllAnagramsOf(String word) {
+    public void removeAllAnagramsOf(String word) throws AnagramException {
         String key = AnagramUtil.createKey(word);
         List<EnglishWord> anagrams = englishWordRepository.findByAnagramKey(key);
 

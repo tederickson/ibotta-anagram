@@ -1,5 +1,9 @@
 package com.ibotta.anagram.rest;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.ibotta.anagram.domain.AnagramDigest;
 import com.ibotta.anagram.domain.AnagramMetric;
 import com.ibotta.anagram.domain.CreateAnagramDigest;
@@ -15,10 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Exceptions are handled by the AnagramExceptionAdvice. The exception is logged
@@ -38,13 +38,14 @@ public class AnagramController {
     }
 
     @GetMapping("/anagrams/{word}.json")
-    public AnagramDigest getAnagrams(@PathVariable("word") String word, @RequestParam(value = "limit", required = false) Integer limit,
+    public AnagramDigest getAnagrams(@PathVariable("word") String word,
+                                     @RequestParam(value = "limit", required = false) Integer limit,
                                      @RequestParam(value = "allowProperNoun", required = false) boolean allowProperNoun) throws AnagramException {
         log.info("/anagrams/" + word + ".json");
         log.info("limit: " + limit);
         log.info("allowProperNoun: " + allowProperNoun);
 
-        AnagramDigest digest = new AnagramDigest();
+        final var digest = new AnagramDigest();
         digest.setAnagrams(anagramService.findAnagrams(word, allowProperNoun));
 
         if (limit != null && limit < digest.getAnagrams().size()) {
@@ -72,7 +73,7 @@ public class AnagramController {
     }
 
     @DeleteMapping("/anagrams/{word}")
-    public void deleteAllAnagrams(@PathVariable("word") String word) {
+    public void deleteAllAnagrams(@PathVariable("word") String word) throws AnagramException {
         log.info("deleteAllAnagrams(" + word + ")");
 
         anagramService.removeAllAnagramsOf(word);

@@ -1,10 +1,10 @@
 package com.ibotta.anagram.service;
 
+import java.util.List;
+
 import com.ibotta.anagram.domain.AnagramMetric;
 import com.ibotta.anagram.domain.WordMetric;
 import com.ibotta.anagram.exception.AnagramException;
-
-import java.util.List;
 
 public interface AnagramService {
     void addWords(List<String> words) throws AnagramException;
@@ -15,7 +15,7 @@ public interface AnagramService {
 
     void removeAll();
 
-    void removeAllAnagramsOf(String word);
+    void removeAllAnagramsOf(String word) throws AnagramException;
 
     boolean areSameAnagram(List<String> words) throws AnagramException;
 

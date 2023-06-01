@@ -1,13 +1,14 @@
 package com.ibotta.anagram.model;
 
-import com.ibotta.anagram.util.AnagramUtil;
-import lombok.Data;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
+
+import com.ibotta.anagram.exception.AnagramException;
+import com.ibotta.anagram.util.AnagramUtil;
+import lombok.Data;
 
 // The LomBok project annotation takes care of the getters, setters, toString, equals and hash code.
 // Modify your class and the bytecode is updated.
@@ -25,7 +26,7 @@ public class EnglishWord {
     public EnglishWord() {
     }
 
-    public EnglishWord(String word) {
+    public EnglishWord(String word) throws AnagramException {
         this.word = word;
         this.anagramKey = AnagramUtil.createKey(word);
     }

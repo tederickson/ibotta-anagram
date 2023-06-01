@@ -13,6 +13,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.ibotta.anagram.domain.AnagramMetric;
+import com.ibotta.anagram.domain.WordMetric;
+import com.ibotta.anagram.exception.AnagramException;
+import com.ibotta.anagram.model.EnglishWord;
+import com.ibotta.anagram.repository.EnglishWordRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,278 +27,269 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.ibotta.anagram.domain.AnagramMetric;
-import com.ibotta.anagram.domain.WordMetric;
-import com.ibotta.anagram.exception.AnagramException;
-import com.ibotta.anagram.model.EnglishWord;
-import com.ibotta.anagram.repository.EnglishWordRepository;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class AnagramServiceTest {
-	private final String[] words = { "finite", "infinity", "dear", "dare", "read", "rare", "rear", "unicorn", "to", "thirteen", "twelve" };
-	private static final float DELTA = 0.001f;
+    private static final float DELTA = 0.001f;
+    private final String[] words = {"finite", "infinity", "dear", "dare", "read", "rare", "rear", "unicorn", "to", "thirteen", "twelve"};
+    @Value("classpath:static/dictionary.txt")
+    Resource dictionary;
+    @Autowired
+    private EnglishWordRepository englishWordRepository;
+    @Autowired
+    private AnagramService anagramService;
 
-	@Autowired
-	private EnglishWordRepository englishWordRepository;
+    @Before
+    public void setUp() throws Exception {
+        englishWordRepository.deleteAll();
+    }
 
-	@Autowired
-	private AnagramService anagramService;
+    @Test
+    public void testReadDictionary() throws IOException {
+        assertTrue(dictionary.getFile().canRead());
 
-	@Value("classpath:static/dictionary.txt")
-	Resource dictionary;
+        List<String> wordList = new ArrayList<>();
 
-	@Before
-	public void setUp() throws Exception {
-		englishWordRepository.deleteAll();
-	}
+        long start = System.currentTimeMillis();
+        try (BufferedReader in = new BufferedReader(new FileReader(dictionary.getFile()))) {
+            String text = in.readLine();
 
-	@Test
-	public void testReadDictionary() throws IOException {
-		assertTrue(dictionary.getFile().canRead());
+            while (text != null) {
+                wordList.add(text);
+                text = in.readLine();
+            }
+        }
+        displayMetric("Read dictionary", start);
+        System.out.println("There are " + wordList.size() + " words");
 
-		List<String> wordList = new ArrayList<>();
+        start = System.currentTimeMillis();
+        anagramService.addWords(wordList);
+        displayMetric("Add words", start);
 
-		long start = System.currentTimeMillis();
-		try (BufferedReader in = new BufferedReader(new FileReader(dictionary.getFile()))) {
-			String text = in.readLine();
+        start = System.currentTimeMillis();
+        WordMetric metric = anagramService.retrieveWordMetrics();
+        displayMetric(metric.toString(), start);
 
-			while (text != null) {
-				wordList.add(text);
-				text = in.readLine();
-			}
-		}
-		displayMetric("Read dictionary", start);
-		System.out.println("There are " + wordList.size() + " words");
+        start = System.currentTimeMillis();
+        List<AnagramMetric> metrics = anagramService.mostAnagrams();
+        assertTrue(!metrics.isEmpty());
+        metrics.forEach(it -> {
+            System.out.println(it);
+        });
 
-		start = System.currentTimeMillis();
-		anagramService.addWords(wordList);
-		displayMetric("Add words", start);
+        List<String> anagrams = anagramService.findAnagrams(metrics.get(0).getWord(), true);
+        System.out.println(anagrams);
+    }
 
-		start = System.currentTimeMillis();
-		WordMetric metric = anagramService.retrieveWordMetrics();
-		displayMetric(metric.toString(), start);
+    private void displayMetric(String message, long start) {
+        long finish = System.currentTimeMillis();
+        long duration = finish - start;
 
-		start = System.currentTimeMillis();
-		List<AnagramMetric> metrics = anagramService.mostAnagrams();
-		assertTrue(!metrics.isEmpty());
-		metrics.forEach(it -> {
-			System.out.println(it);
-		});
+        System.out.println(message + " in " + duration + " milliseconds");
+    }
 
-		List<String> anagrams = anagramService.findAnagrams(metrics.get(0).getWord(), true);
-		System.out.println(anagrams);
-	}
+    @Test
+    public void testAddWords() throws AnagramException {
+        List<String> wordList = new ArrayList<>();
+        for (String word : words) {
+            wordList.add(word);
+        }
+        anagramService.addWords(wordList);
+        assertEquals(words.length, englishWordRepository.count());
 
-	private void displayMetric(String message, long start) {
-		long finish = System.currentTimeMillis();
-		long duration = finish - start;
+        anagramService.addWords(wordList);
+        assertEquals(words.length, englishWordRepository.count());
+    }
 
-		System.out.println(message + " in " + duration + " milliseconds");
-	}
+    @Test
+    public void testAddInvalidWords() {
+        List<String> wordList = new ArrayList<>();
 
-	@Test
-	public void testAddWords() throws AnagramException {
-		List<String> wordList = new ArrayList<>();
-		for (String word : words) {
-			wordList.add(word);
-		}
-		anagramService.addWords(wordList);
-		assertEquals(words.length, englishWordRepository.count());
+        try {
+            anagramService.addWords(wordList);
+            fail("empty list");
+        } catch (AnagramException e) {
+        }
 
-		anagramService.addWords(wordList);
-		assertEquals(words.length, englishWordRepository.count());
-	}
+        wordList.add("mxyalfj");
+        try {
+            anagramService.addWords(wordList);
+            fail("invalid word");
+        } catch (AnagramException e) {
+        }
+    }
 
-	@Test
-	public void testAddInvalidWords() {
-		List<String> wordList = new ArrayList<>();
+    @Test
+    public void testAddProperNoun() throws AnagramException {
+        List<String> wordList = new ArrayList<>();
+        wordList.add("a");
+        wordList.add("A");
+        anagramService.addWords(wordList);
+        assertEquals(2, englishWordRepository.count());
 
-		try {
-			anagramService.addWords(wordList);
-			fail("empty list");
-		} catch (AnagramException e) {
-		}
+        List<String> anagrams = anagramService.findAnagrams("a", false);
+        assertTrue(anagrams.isEmpty());
 
-		wordList.add("mxyalfj");
-		try {
-			anagramService.addWords(wordList);
-			fail("invalid word");
-		} catch (AnagramException e) {
-		}
-	}
+        anagrams = anagramService.findAnagrams("a", true);
+        assertFalse(anagrams.isEmpty());
+    }
 
-	@Test
-	public void testAddProperNoun() throws AnagramException {
-		List<String> wordList = new ArrayList<>();
-		wordList.add("a");
-		wordList.add("A");
-		anagramService.addWords(wordList);
-		assertEquals(2, englishWordRepository.count());
+    @Test
+    public void testFindAnagrams() throws AnagramException {
+        addAllWords();
 
-		List<String> anagrams = anagramService.findAnagrams("a", false);
-		assertTrue(anagrams.isEmpty());
+        boolean allowProperNoun = false;
+        List<String> anagrams = anagramService.findAnagrams("fish", allowProperNoun);
+        assertTrue(anagrams.isEmpty());
 
-		anagrams = anagramService.findAnagrams("a", true);
-		assertFalse(anagrams.isEmpty());
-	}
+        anagrams = anagramService.findAnagrams("read", allowProperNoun);
+        assertEquals(2, anagrams.size());
 
-	@Test
-	public void testFindAnagrams() throws AnagramException {
-		addAllWords();
+        assertTrue(anagrams.contains("dear"));
+        assertTrue(anagrams.contains("dare"));
+    }
 
-		boolean allowProperNoun = false;
-		List<String> anagrams = anagramService.findAnagrams("fish", allowProperNoun);
-		assertTrue(anagrams.isEmpty());
+    @Test
+    public void testRemove() throws AnagramException {
+        assertEquals(0, englishWordRepository.count());
+        anagramService.remove("fish");
+        anagramService.remove("read");
 
-		anagrams = anagramService.findAnagrams("read", allowProperNoun);
-		assertEquals(2, anagrams.size());
+        addAllWords();
+        String word = "fish";
+        assertFalse(englishWordRepository.findById(word).isPresent());
+        anagramService.remove(word);
 
-		assertTrue(anagrams.contains("dear"));
-		assertTrue(anagrams.contains("dare"));
-	}
+        word = words[3];
+        assertTrue(englishWordRepository.findById(word).isPresent());
+        anagramService.remove(word);
+        assertFalse(englishWordRepository.findById(word).isPresent());
+    }
 
-	@Test
-	public void testRemove() throws AnagramException {
-		assertEquals(0, englishWordRepository.count());
-		anagramService.remove("fish");
-		anagramService.remove("read");
+    @Test
+    public void testRemoveAll() throws AnagramException {
+        addAllWords();
+        assertEquals(words.length, englishWordRepository.count());
 
-		addAllWords();
-		String word = "fish";
-		assertFalse(englishWordRepository.findById(word).isPresent());
-		anagramService.remove(word);
+        anagramService.removeAll();
+        assertEquals(0, englishWordRepository.count());
+    }
 
-		word = words[3];
-		assertTrue(englishWordRepository.findById(word).isPresent());
-		anagramService.remove(word);
-		assertFalse(englishWordRepository.findById(word).isPresent());
-	}
+    @Test
+    public void testRemoveAllAnagramsOf() throws AnagramException {
+        addAllWords();
 
-	@Test
-	public void testRemoveAll() {
-		addAllWords();
-		assertEquals(words.length, englishWordRepository.count());
+        String[] anagrams = {"dear", "dare", "read"};
+        for (String word : anagrams) {
+            assertTrue(englishWordRepository.findById(word).isPresent());
+        }
 
-		anagramService.removeAll();
-		assertEquals(0, englishWordRepository.count());
-	}
+        anagramService.removeAllAnagramsOf("dear");
+        for (String word : anagrams) {
+            assertFalse(englishWordRepository.findById(word).isPresent());
+        }
+    }
 
-	@Test
-	public void testRemoveAllAnagramsOf() throws AnagramException {
-		addAllWords();
+    @Test
+    public void testAreSameAnagram() throws AnagramException {
+        assertEquals(0, englishWordRepository.count());
 
-		String[] anagrams = { "dear", "dare", "read" };
-		for (String word : anagrams) {
-			assertTrue(englishWordRepository.findById(word).isPresent());
-		}
+        List<String> anagrams = new ArrayList<>();
 
-		anagramService.removeAllAnagramsOf("dear");
-		for (String word : anagrams) {
-			assertFalse(englishWordRepository.findById(word).isPresent());
-		}
-	}
+        anagrams.add("ape");
+        anagrams.add("pea");
+        assertTrue(anagramService.areSameAnagram(anagrams));
 
-	@Test
-	public void testAreSameAnagram() throws AnagramException {
-		assertEquals(0, englishWordRepository.count());
+        anagrams.add("aper");
+        assertFalse(anagramService.areSameAnagram(anagrams));
+    }
 
-		List<String> anagrams = new ArrayList<>();
+    @Test
+    public void testRetrieveWordMetrics() throws AnagramException {
+        assertEquals(0, englishWordRepository.count());
 
-		anagrams.add("ape");
-		anagrams.add("pea");
-		assertTrue(anagramService.areSameAnagram(anagrams));
+        WordMetric metric = anagramService.retrieveWordMetrics();
 
-		anagrams.add("aper");
-		assertFalse(anagramService.areSameAnagram(anagrams));
-	}
+        assertNotNull(metric);
+        assertEquals(metric, new WordMetric());
 
-	@Test
-	public void testRetrieveWordMetrics() {
-		assertEquals(0, englishWordRepository.count());
+        addAllWords();
 
-		WordMetric metric = anagramService.retrieveWordMetrics();
+        metric = anagramService.retrieveWordMetrics();
 
-		assertNotNull(metric);
-		assertEquals(metric, new WordMetric());
+        assertEquals(metric.getCount(), words.length);
 
-		addAllWords();
+        List<Integer> lengths = new ArrayList<>();
 
-		metric = anagramService.retrieveWordMetrics();
+        for (String word : words) {
+            lengths.add(word.length());
+        }
+        int min = lengths.stream().reduce(Integer::min).get();
+        assertEquals(metric.getMin(), min);
 
-		assertEquals(metric.getCount(), words.length);
+        int max = lengths.stream().reduce(Integer::max).get();
+        assertEquals(metric.getMax(), max);
 
-		List<Integer> lengths = new ArrayList<>();
+        float total = lengths.stream().reduce(0, Integer::sum);
+        float average = total / words.length;
+        assertEquals(metric.getAverage(), average, DELTA);
 
-		for (String word : words) {
-			lengths.add(word.length());
-		}
-		int min = lengths.stream().reduce(Integer::min).get();
-		assertEquals(metric.getMin(), min);
+        Collections.sort(lengths);
+        float median;
+        if (lengths.size() % 2 == 1) {
+            // Odd number of entries, use the middle entry
+            median = lengths.get(lengths.size() / 2);
+        } else {
+            // Average the two middle entries
+            int left = lengths.size() / 2;
+            int right = left + 1;
+            total = lengths.get(left) + lengths.get(right);
 
-		int max = lengths.stream().reduce(Integer::max).get();
-		assertEquals(metric.getMax(), max);
+            median = total / 2f;
+        }
 
-		float total = lengths.stream().reduce(0, Integer::sum);
-		float average = total / words.length;
-		assertEquals(metric.getAverage(), average, DELTA);
+        assertEquals(metric.getMedian(), median, DELTA);
+    }
 
-		Collections.sort(lengths);
-		float median;
-		if (lengths.size() % 2 == 1) {
-			// Odd number of entries, use the middle entry
-			median = lengths.get(lengths.size() / 2);
-		} else {
-			// Average the two middle entries
-			int left = lengths.size() / 2;
-			int right = left + 1;
-			total = lengths.get(left) + lengths.get(right);
+    @Test
+    public void testMostAnagrams() throws AnagramException {
+        assertTrue(anagramService.mostAnagrams().isEmpty());
 
-			median = total / 2f;
-		}
+        addAllWords();
+        List<AnagramMetric> metrics = anagramService.mostAnagrams();
+        assertEquals(1, metrics.size());
 
-		assertEquals(metric.getMedian(), median, DELTA);
-	}
+        AnagramMetric metric = metrics.get(0);
+        assertEquals(3, metric.getCount());
 
-	@Test
-	public void testMostAnagrams() {
-		assertTrue(anagramService.mostAnagrams().isEmpty());
+        switch (metric.getWord()) {
+            case "dear":
+            case "dare":
+            case "read":
+                break;
 
-		addAllWords();
-		List<AnagramMetric> metrics = anagramService.mostAnagrams();
-		assertEquals(1, metrics.size());
+            default:
+                fail("incorrect anagram");
+        }
+    }
 
-		AnagramMetric metric = metrics.get(0);
-		assertEquals(3, metric.getCount());
+    @Test
+    public void testAnagramsWithAtLeast() throws AnagramException {
+        final int numAnagrams = 2;
+        assertTrue(anagramService.anagramsWithAtLeast(numAnagrams).isEmpty());
 
-		switch (metric.getWord()) {
-		case "dear":
-		case "dare":
-		case "read":
-			break;
+        addAllWords();
+        List<AnagramMetric> metrics = anagramService.anagramsWithAtLeast(numAnagrams);
 
-		default:
-			fail("incorrect anagram");
-		}
-	}
+        assertEquals(2, metrics.size());
+        for (AnagramMetric metric : metrics) {
+            assertTrue(metric.getCount() >= numAnagrams);
+        }
+    }
 
-	@Test
-	public void testAnagramsWithAtLeast() {
-		final int numAnagrams = 2;
-		assertTrue(anagramService.anagramsWithAtLeast(numAnagrams).isEmpty());
-
-		addAllWords();
-		List<AnagramMetric> metrics = anagramService.anagramsWithAtLeast(numAnagrams);
-
-		assertEquals(2, metrics.size());
-		for (AnagramMetric metric : metrics) {
-			assertTrue(metric.getCount() >= numAnagrams);
-		}
-	}
-
-	private void addAllWords() {
-		for (String word : words) {
-			englishWordRepository.save(new EnglishWord(word));
-		}
-	}
+    private void addAllWords() throws AnagramException {
+        for (String word : words) {
+            englishWordRepository.save(new EnglishWord(word));
+        }
+    }
 }

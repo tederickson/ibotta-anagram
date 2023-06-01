@@ -1,11 +1,11 @@
 package com.ibotta.anagram.model;
 
-import lombok.Getter;
-import lombok.ToString;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @ToString
