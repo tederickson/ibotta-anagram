@@ -15,6 +15,7 @@ import com.ibotta.anagram.domain.AnagramDigest;
 import com.ibotta.anagram.domain.CreateAnagramDigest;
 import com.ibotta.anagram.domain.WordMetric;
 import com.ibotta.anagram.exception.AnagramException;
+import com.ibotta.anagram.exception.InvalidWordException;
 import com.ibotta.anagram.service.AnagramService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -105,6 +106,18 @@ public class AnagramControllerTest {
 
         final var builder = post("/words.json").contentType(MediaType.APPLICATION_JSON).content(content);
         mvc.perform(builder).andExpect(status().is5xxServerError());
+    }
+
+    @Test
+    public void testFindAnagramsThrowsException() throws Exception {
+        final var word = "aaaaaaaaaaaaaaaaaaaaaaa";
+        final var allowProperNoun = false;
+
+        when(anagramService.findAnagrams(word, allowProperNoun))
+                .thenThrow(new InvalidWordException("unit test worked"));
+        final var builder = get("/anagrams/" + word + ".json").contentType(MediaType.APPLICATION_JSON);
+
+        mvc.perform(builder).andExpect(status().is4xxClientError());
     }
 
     @Test
