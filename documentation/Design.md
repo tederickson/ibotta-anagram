@@ -80,10 +80,7 @@ replace with
   - curl -i -X DELETE http://localhost:8080/anagrams/read
 - If word metric information is requested by multiple API calls then consider converting the Java code to custom database calls. 
 - Add an endpoint to add proper nouns to the datastore.  Do not verify the proper noun against the dictionary.  Allow any word that starts with a capital letter and the rest of the letters are lower case.
-- Currently the design is one word entered, several words of the same length are returned. Accept phrases - 'nag a ram'  would return 'anagram'  
-- Display subsets - right now a seven letter word displays the seven letter anagrams.  Display the
-  - five and two letter words that utilize all seven letters
-  - four and three letter words that utilize all seven letters
+- Currently the design is one word entered, several words of the same length are returned. Accept phrases - 'nag a ram'  would return 'anagram'
 - Add a web interface to display metrics
 - Add metrics to the API calls and display those metrics on the web interface
 
