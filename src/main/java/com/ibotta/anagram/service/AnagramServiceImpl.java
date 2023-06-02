@@ -39,7 +39,7 @@ public class AnagramServiceImpl implements AnagramService {
             throw new AnagramException("empty list of words");
         }
 
-        for (String word : words) {
+        for (var word : words) {
             validateEnglishWord(word);
             if (englishWordRepository.findById(word).isEmpty()) {
                 englishWordRepository.save(new EnglishWord(word));
@@ -50,8 +50,8 @@ public class AnagramServiceImpl implements AnagramService {
     @Override
     public List<String> findAnagrams(String word, boolean allowProperNoun) throws AnagramException {
         validateEnglishWord(word);
-        String key = AnagramUtil.createKey(word);
-        List<EnglishWord> anagrams = englishWordRepository.findByAnagramKey(key);
+        final var key = AnagramUtil.createKey(word);
+        final var anagrams = englishWordRepository.findByAnagramKey(key);
         List<String> words = new ArrayList<>();
 
         anagrams.forEach(entity -> {
@@ -82,8 +82,8 @@ public class AnagramServiceImpl implements AnagramService {
 
     @Override
     public void removeAllAnagramsOf(String word) throws AnagramException {
-        String key = AnagramUtil.createKey(word);
-        List<EnglishWord> anagrams = englishWordRepository.findByAnagramKey(key);
+        final var key = AnagramUtil.createKey(word);
+        final var anagrams = englishWordRepository.findByAnagramKey(key);
 
         if (!anagrams.isEmpty()) {
             englishWordRepository.deleteInBatch(anagrams);
@@ -92,7 +92,7 @@ public class AnagramServiceImpl implements AnagramService {
 
     @Override
     public WordMetric retrieveWordMetrics() {
-        WordMetric metric = new WordMetric();
+        final var metric = new WordMetric();
         List<Integer> lengths = new ArrayList<>();
 
         for (EnglishWord word : englishWordRepository.findAll()) {
@@ -128,9 +128,9 @@ public class AnagramServiceImpl implements AnagramService {
 
     @Override
     public boolean areSameAnagram(List<String> words) throws AnagramException {
-        String anagramKey = AnagramUtil.createKey(words.get(0));
+        final var anagramKey = AnagramUtil.createKey(words.get(0));
 
-        for (String word : words) {
+        for (var word : words) {
             validateEnglishWord(word);
             if (!anagramKey.equals(AnagramUtil.createKey(word))) {
                 return false;
@@ -142,7 +142,7 @@ public class AnagramServiceImpl implements AnagramService {
     @Override
     public List<AnagramMetric> mostAnagrams() {
         List<AnagramMetric> metrics = new ArrayList<>();
-        List<AnagramGroup> groups = anagramGroupRepository.findAll();
+        final var groups = anagramGroupRepository.findAll();
         int max = 0;
 
         for (AnagramGroup group : groups) {
@@ -204,7 +204,7 @@ public class AnagramServiceImpl implements AnagramService {
                 text = in.readLine();
             }
         } catch (IOException e) {
-            throw new AnagramException("unable to read dictionary", e);
+            throw new AnagramException("unable to read dictionary " + dictionary.getFilename());
         }
     }
 }
