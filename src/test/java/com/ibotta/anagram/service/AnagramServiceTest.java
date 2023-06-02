@@ -67,17 +67,14 @@ public class AnagramServiceTest {
         displayMetric("Add words", start);
 
         start = System.currentTimeMillis();
-        WordMetric metric = anagramService.retrieveWordMetrics();
+        final var metric = anagramService.retrieveWordMetrics();
         displayMetric(metric.toString(), start);
 
-        start = System.currentTimeMillis();
-        List<AnagramMetric> metrics = anagramService.mostAnagrams();
+        final var metrics = anagramService.mostAnagrams();
         assertTrue(!metrics.isEmpty());
-        metrics.forEach(it -> {
-            System.out.println(it);
-        });
+        metrics.stream().forEach(System.out::println);
 
-        List<String> anagrams = anagramService.findAnagrams(metrics.get(0).getWord(), true);
+        final var anagrams = anagramService.findAnagrams(metrics.get(0).getWord(), true);
         System.out.println(anagrams);
     }
 
@@ -90,10 +87,8 @@ public class AnagramServiceTest {
 
     @Test
     public void testAddWords() throws AnagramException {
-        List<String> wordList = new ArrayList<>();
-        for (String word : words) {
-            wordList.add(word);
-        }
+        final var wordList = List.of(words);
+
         anagramService.addWords(wordList);
         assertEquals(words.length, englishWordRepository.count());
 
