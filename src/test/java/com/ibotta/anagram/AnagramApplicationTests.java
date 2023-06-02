@@ -10,7 +10,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class AnagramApplicationTests {
 
     @Test
-    public void contextLoads() {
+    public void applicationContextLoads() {
+        String[] args = {};
+        AnagramApplication.main(args);
     }
 
 }

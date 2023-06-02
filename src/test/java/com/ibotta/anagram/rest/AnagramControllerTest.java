@@ -146,6 +146,14 @@ public class AnagramControllerTest {
     }
 
     @Test
+    public void testGetAnagramGroupsWithAtLeastThreeAnagrams() throws Exception {
+        final var builder = get("/anagrams/group")
+                .param("size", "3")
+                .contentType(MediaType.APPLICATION_JSON);
+        mvc.perform(builder).andExpect(status().isOk()).andReturn();
+    }
+
+    @Test
     public void testDetermineWordsSameAnagram() throws Exception {
         final var createAnagramDigest = new CreateAnagramDigest();
         createAnagramDigest.setWords(words);
