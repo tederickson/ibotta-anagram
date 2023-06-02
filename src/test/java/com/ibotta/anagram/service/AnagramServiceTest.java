@@ -3,6 +3,7 @@ package com.ibotta.anagram.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -40,7 +41,7 @@ public class AnagramServiceTest {
     private AnagramService anagramService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         englishWordRepository.deleteAll();
     }
 
@@ -71,8 +72,8 @@ public class AnagramServiceTest {
         displayMetric(metric.toString(), start);
 
         final var metrics = anagramService.mostAnagrams();
-        assertTrue(!metrics.isEmpty());
-        metrics.stream().forEach(System.out::println);
+        assertFalse(metrics.isEmpty());
+        metrics.forEach(System.out::println);
 
         final var anagrams = anagramService.findAnagrams(metrics.get(0).getWord(), true);
         System.out.println(anagrams);
@@ -100,18 +101,10 @@ public class AnagramServiceTest {
     public void testAddInvalidWords() {
         List<String> wordList = new ArrayList<>();
 
-        try {
-            anagramService.addWords(wordList);
-            fail("empty list");
-        } catch (AnagramException e) {
-        }
+        assertThrows(AnagramException.class, () -> anagramService.addWords(wordList));
 
         wordList.add("mxyalfj");
-        try {
-            anagramService.addWords(wordList);
-            fail("invalid word");
-        } catch (AnagramException e) {
-        }
+        assertThrows(AnagramException.class, () -> anagramService.addWords(wordList));
     }
 
     @Test
@@ -122,7 +115,7 @@ public class AnagramServiceTest {
         anagramService.addWords(wordList);
         assertEquals(2, englishWordRepository.count());
 
-        List<String> anagrams = anagramService.findAnagrams("a", false);
+        var anagrams = anagramService.findAnagrams("a", false);
         assertTrue(anagrams.isEmpty());
 
         anagrams = anagramService.findAnagrams("a", true);
@@ -133,8 +126,8 @@ public class AnagramServiceTest {
     public void testFindAnagrams() throws AnagramException {
         addAllWords();
 
-        boolean allowProperNoun = false;
-        List<String> anagrams = anagramService.findAnagrams("fish", allowProperNoun);
+        final var allowProperNoun = false;
+        var anagrams = anagramService.findAnagrams("fish", allowProperNoun);
         assertTrue(anagrams.isEmpty());
 
         anagrams = anagramService.findAnagrams("read", allowProperNoun);
@@ -174,7 +167,7 @@ public class AnagramServiceTest {
     public void testRemoveAllAnagramsOf() throws AnagramException {
         addAllWords();
 
-        String[] anagrams = {"dear", "dare", "read"};
+        final var anagrams = List.of("dear", "dare", "read");
         for (String word : anagrams) {
             assertTrue(englishWordRepository.findById(word).isPresent());
         }
@@ -203,7 +196,7 @@ public class AnagramServiceTest {
     public void testRetrieveWordMetrics() throws AnagramException {
         assertEquals(0, englishWordRepository.count());
 
-        WordMetric metric = anagramService.retrieveWordMetrics();
+        var metric = anagramService.retrieveWordMetrics();
 
         assertNotNull(metric);
         assertEquals(metric, new WordMetric());
@@ -219,10 +212,10 @@ public class AnagramServiceTest {
         for (String word : words) {
             lengths.add(word.length());
         }
-        int min = lengths.stream().reduce(Integer::min).get();
+        int min = lengths.stream().reduce(Integer::min).orElseThrow();
         assertEquals(metric.getMin(), min);
 
-        int max = lengths.stream().reduce(Integer::max).get();
+        int max = lengths.stream().reduce(Integer::max).orElseThrow();
         assertEquals(metric.getMax(), max);
 
         float total = lengths.stream().reduce(0, Integer::sum);
@@ -251,10 +244,10 @@ public class AnagramServiceTest {
         assertTrue(anagramService.mostAnagrams().isEmpty());
 
         addAllWords();
-        List<AnagramMetric> metrics = anagramService.mostAnagrams();
+        final var metrics = anagramService.mostAnagrams();
         assertEquals(1, metrics.size());
 
-        AnagramMetric metric = metrics.get(0);
+        final var metric = metrics.get(0);
         assertEquals(3, metric.getCount());
 
         switch (metric.getWord()) {
@@ -274,7 +267,7 @@ public class AnagramServiceTest {
         assertTrue(anagramService.anagramsWithAtLeast(numAnagrams).isEmpty());
 
         addAllWords();
-        List<AnagramMetric> metrics = anagramService.anagramsWithAtLeast(numAnagrams);
+        final var metrics = anagramService.anagramsWithAtLeast(numAnagrams);
 
         assertEquals(2, metrics.size());
         for (AnagramMetric metric : metrics) {
@@ -283,7 +276,7 @@ public class AnagramServiceTest {
     }
 
     private void addAllWords() throws AnagramException {
-        for (String word : words) {
+        for (var word : words) {
             englishWordRepository.save(new EnglishWord(word));
         }
     }
