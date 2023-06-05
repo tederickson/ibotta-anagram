@@ -3,7 +3,7 @@ package com.ibotta.anagram.domain;
 import lombok.Data;
 
 @Data
-public class AnagramMetric {
+public final class AnagramMetric {
     private String word;
     private int count;
 }

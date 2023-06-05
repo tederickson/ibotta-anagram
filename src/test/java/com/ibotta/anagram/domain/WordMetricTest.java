@@ -6,6 +6,7 @@ import static com.google.code.beanmatchers.BeanMatchers.hasValidGettersAndSetter
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.jupiter.api.Test;
 
 class WordMetricTest {
@@ -27,6 +28,6 @@ class WordMetricTest {
 
     @Test
     public void equalsAndHashCode() {
-        EqualsVerifier.simple().forClass(WordMetric.class).verify();
+        EqualsVerifier.forClass(WordMetric.class).suppress(Warning.NONFINAL_FIELDS).verify();
     }
 }

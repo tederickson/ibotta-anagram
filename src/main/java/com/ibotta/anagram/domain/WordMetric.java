@@ -3,7 +3,7 @@ package com.ibotta.anagram.domain;
 import lombok.Data;
 
 @Data
-public class WordMetric {
+public final class WordMetric {
     private int count;
     private int min;
     private int max;

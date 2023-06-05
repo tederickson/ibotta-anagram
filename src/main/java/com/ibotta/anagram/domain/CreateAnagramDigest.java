@@ -3,6 +3,6 @@ package com.ibotta.anagram.domain;
 import lombok.Data;
 
 @Data
-public class CreateAnagramDigest {
+public final class CreateAnagramDigest {
     private String[] words;
 }

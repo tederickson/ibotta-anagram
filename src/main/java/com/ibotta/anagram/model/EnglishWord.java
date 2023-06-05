@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
+import java.util.Objects;
 
 import com.ibotta.anagram.exception.AnagramException;
 import com.ibotta.anagram.util.AnagramUtil;
@@ -16,7 +17,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "ENGLISH_WORD", indexes = {@Index(name = "IDX_ANAGRAM_KEY", columnList = "anagramKey")})
-public class EnglishWord {
+public final class EnglishWord {
     @Id
     private String word;
 
@@ -31,4 +32,20 @@ public class EnglishWord {
         this.anagramKey = AnagramUtil.createKey(word);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        EnglishWord that = (EnglishWord) o;
+        return Objects.equals(anagramKey, that.anagramKey);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(anagramKey);
+    }
 }

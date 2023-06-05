@@ -9,26 +9,25 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 import org.junit.jupiter.api.Test;
 
-class AnagramMetricTest {
-
+class CreateAnagramDigestTest {
 
     @Test
     public void shouldHaveANoArgsConstructor() {
-        assertThat(AnagramMetric.class, hasValidBeanConstructor());
+        assertThat(CreateAnagramDigest.class, hasValidBeanConstructor());
     }
 
     @Test
     public void gettersAndSettersShouldWorkForEachProperty() {
-        assertThat(AnagramMetric.class, hasValidGettersAndSetters());
+        assertThat(CreateAnagramDigest.class, hasValidGettersAndSetters());
     }
 
     @Test
     public void allPropertiesShouldBeRepresentedInToStringOutput() {
-        assertThat(AnagramMetric.class, hasValidBeanToString());
+        assertThat(CreateAnagramDigest.class, hasValidBeanToString());
     }
 
     @Test
     public void equalsAndHashCode() {
-        EqualsVerifier.forClass(AnagramMetric.class).suppress(Warning.NONFINAL_FIELDS).verify();
+        EqualsVerifier.forClass(CreateAnagramDigest.class).suppress(Warning.NONFINAL_FIELDS).verify();
     }
 }

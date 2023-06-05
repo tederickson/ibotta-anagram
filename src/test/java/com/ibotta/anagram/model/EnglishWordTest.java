@@ -4,10 +4,12 @@ import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanToString;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidGettersAndSetters;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.ibotta.anagram.exception.AnagramException;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.jupiter.api.Test;
 
 class EnglishWordTest {
@@ -27,6 +29,11 @@ class EnglishWordTest {
     }
 
     @Test
+    public void equalsAndHashCode() {
+        EqualsVerifier.forClass(EnglishWord.class).suppress(Warning.NONFINAL_FIELDS).verify();
+    }
+
+    @Test
     public void testInvalidWord() {
         assertThrows(AnagramException.class,
                 () -> new EnglishWord("aaaaaaaaaaaaaaaaaaaaaaaaa"));
@@ -40,5 +47,4 @@ class EnglishWordTest {
         assertEquals("00000000400010020040000000", word.getAnagramKey());
         assertEquals(mississippi, word.getWord());
     }
-
 }

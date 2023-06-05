@@ -5,6 +5,6 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class AnagramDigest {
+public final class AnagramDigest {
     private List<String> anagrams;
 }

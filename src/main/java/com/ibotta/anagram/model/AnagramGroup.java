@@ -3,17 +3,37 @@ package com.ibotta.anagram.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Objects;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @Getter
+@Setter
 @ToString
 @Entity
 @Table(name = "ANAGRAM_GRP")
-public class AnagramGroup {
+public final class AnagramGroup {
     @Id
     private String anagramKey;
 
     private int anagramCount;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AnagramGroup that = (AnagramGroup) o;
+        return Objects.equals(anagramKey, that.anagramKey);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(anagramKey);
+    }
 }

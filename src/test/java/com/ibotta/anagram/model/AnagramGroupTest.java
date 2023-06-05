@@ -1,4 +1,4 @@
-package com.ibotta.anagram.domain;
+package com.ibotta.anagram.model;
 
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanToString;
@@ -9,26 +9,27 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 import org.junit.jupiter.api.Test;
 
-class AnagramMetricTest {
-
+class AnagramGroupTest {
 
     @Test
     public void shouldHaveANoArgsConstructor() {
-        assertThat(AnagramMetric.class, hasValidBeanConstructor());
+        assertThat(AnagramGroup.class, hasValidBeanConstructor());
     }
 
     @Test
     public void gettersAndSettersShouldWorkForEachProperty() {
-        assertThat(AnagramMetric.class, hasValidGettersAndSetters());
+        assertThat(AnagramGroup.class, hasValidGettersAndSetters());
     }
 
     @Test
     public void allPropertiesShouldBeRepresentedInToStringOutput() {
-        assertThat(AnagramMetric.class, hasValidBeanToString());
+        assertThat(AnagramGroup.class, hasValidBeanToString());
     }
 
     @Test
     public void equalsAndHashCode() {
-        EqualsVerifier.forClass(AnagramMetric.class).suppress(Warning.NONFINAL_FIELDS).verify();
+        EqualsVerifier.forClass(AnagramGroup.class)
+                .suppress(Warning.NONFINAL_FIELDS)
+                .suppress(Warning.SURROGATE_KEY).verify();
     }
 }
