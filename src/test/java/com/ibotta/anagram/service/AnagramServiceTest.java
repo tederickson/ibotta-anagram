@@ -1,11 +1,11 @@
 package com.ibotta.anagram.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -15,32 +15,32 @@ import java.util.Collections;
 import java.util.List;
 
 import com.ibotta.anagram.domain.AnagramMetric;
-import com.ibotta.anagram.domain.WordMetric;
 import com.ibotta.anagram.exception.AnagramException;
 import com.ibotta.anagram.model.EnglishWord;
 import com.ibotta.anagram.repository.EnglishWordRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
-public class AnagramServiceTest {
+class AnagramServiceTest {
     private static final float DELTA = 0.001f;
-    private final String[] words = {"finite", "infinity", "dear", "dare", "read", "rare", "rear", "unicorn", "to", "thirteen", "twelve"};
+    private static final String[] words = {"finite", "infinity", "dear", "dare", "read", "rare", "rear",
+            "unicorn", "to", "thirteen", "twelve"};
+
     @Value("classpath:static/dictionary.txt")
     Resource dictionary;
+
     @Autowired
     private EnglishWordRepository englishWordRepository;
+
     @Autowired
     private AnagramService anagramService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         englishWordRepository.deleteAll();
     }
@@ -199,7 +199,7 @@ public class AnagramServiceTest {
         var metric = anagramService.retrieveWordMetrics();
 
         assertNotNull(metric);
-        assertEquals(metric, new WordMetric());
+        assertEquals(metric, new com.ibotta.anagram.domain.WordMetric());
 
         addAllWords();
 
