@@ -1,21 +1,19 @@
 package com.ibotta.anagram.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
 import com.ibotta.anagram.model.EnglishWord;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 public class EnglishWordRepositoryTest {
     private final static String APPLE_KEY = "10001000000100020000000000";
@@ -23,12 +21,12 @@ public class EnglishWordRepositoryTest {
     @Autowired
     private EnglishWordRepository englishWordRepository;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         englishWordRepository.deleteAll();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         englishWordRepository.deleteAll();
     }

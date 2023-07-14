@@ -1,19 +1,16 @@
 package com.ibotta.anagram.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.ibotta.anagram.model.EnglishWord;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @Slf4j
 public class AnagramGroupRepositoryTest {
@@ -24,7 +21,7 @@ public class AnagramGroupRepositoryTest {
     private EnglishWord apple, dear, rare;
 
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         if (anagramGroupRepository.count() == 0) {
             apple = new EnglishWord("apple");
