@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class CreateAnagramDigestTest {
 
     @Test
-    public void shouldHaveANoArgsConstructor() {
+    public void shouldHaveNoArgsConstructor() {
         assertThat(CreateAnagramDigest.class, hasValidBeanConstructor());
     }
 

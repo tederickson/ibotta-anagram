@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class WordMetricTest {
 
     @Test
-    public void shouldHaveANoArgsConstructor() {
+    public void shouldHaveNoArgsConstructor() {
         assertThat(WordMetric.class, hasValidBeanConstructor());
     }
 

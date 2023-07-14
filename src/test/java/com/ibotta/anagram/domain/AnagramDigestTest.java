@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 class AnagramDigestTest {
     @Test
-    public void shouldHaveANoArgsConstructor() {
+    public void shouldHaveNoArgsConstructor() {
         assertThat(AnagramDigest.class, hasValidBeanConstructor());
     }
 

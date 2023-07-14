@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 
 class EnglishWordTest {
     @Test
-    public void shouldHaveANoArgsConstructor() {
+    public void shouldHaveNoArgsConstructor() {
         assertThat(EnglishWord.class, hasValidBeanConstructor());
     }
 

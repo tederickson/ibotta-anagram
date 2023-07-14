@@ -13,7 +13,7 @@ class AnagramMetricTest {
 
 
     @Test
-    public void shouldHaveANoArgsConstructor() {
+    public void shouldHaveNoArgsConstructor() {
         assertThat(AnagramMetric.class, hasValidBeanConstructor());
     }
 
