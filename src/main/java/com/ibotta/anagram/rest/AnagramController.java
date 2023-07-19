@@ -10,8 +10,8 @@ import com.ibotta.anagram.domain.CreateAnagramDigest;
 import com.ibotta.anagram.domain.WordMetric;
 import com.ibotta.anagram.exception.AnagramException;
 import com.ibotta.anagram.service.AnagramService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,9 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 public class AnagramController {
-    @Autowired
-    private AnagramService anagramService;
+    // RequiredArgsConstructor allows Spring to use constructor dependency injection
+    private final AnagramService anagramService;
 
     @PostMapping("/words.json")
     public void addWords(@RequestBody CreateAnagramDigest createAnagramDigest) throws AnagramException {
@@ -40,7 +41,8 @@ public class AnagramController {
     @GetMapping("/anagrams/{word}.json")
     public AnagramDigest getAnagrams(@PathVariable("word") String word,
                                      @RequestParam(value = "limit", required = false) Integer limit,
-                                     @RequestParam(value = "allowProperNoun", required = false) boolean allowProperNoun) throws AnagramException {
+                                     @RequestParam(value = "allowProperNoun", required = false) boolean allowProperNoun)
+            throws AnagramException {
         log.info("/anagrams/" + word + ".json");
         log.info("limit: " + limit);
         log.info("allowProperNoun: " + allowProperNoun);
@@ -98,7 +100,8 @@ public class AnagramController {
     }
 
     @PostMapping("/anagrams")
-    public boolean determineWordsSameAnagram(@RequestBody CreateAnagramDigest createAnagramDigest) throws AnagramException {
+    public boolean determineWordsSameAnagram(@RequestBody CreateAnagramDigest createAnagramDigest)
+            throws AnagramException {
         log.info("/anagrams " + createAnagramDigest);
 
         return anagramService.areSameAnagram(Arrays.asList(createAnagramDigest.getWords()));
