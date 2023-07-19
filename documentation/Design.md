@@ -90,11 +90,8 @@ Clients will interact with the API over HTTP, and all data sent and received is 
 The API runs on localhost port 8080.
 To run the application on Windows 10:
 ```bash
-# Go to the application directory
-mvnw.cmd spring-boot:run
-
-# Linux machines
-./mvnw spring-boot:run
+# Linux machines - run in project directory
+mvn clean spring-boot:run
 ```
 
 
@@ -103,9 +100,9 @@ mvnw.cmd spring-boot:run
 # The JSON is stored in a text file due to issues with CURL on Windows 10
 # The content type is added because of issues with Windows 10
 
-data.txt holds  '{ "words": ["read", "dear", "dare"] }'
+data.json holds  '{ "words": ["read", "dear", "dare"] }'
 
-$ curl -i -X POST -d "@data.txt" -H "Content-Type: application/json"  http://localhost:8080/words.json
+$ curl -i -X POST -d "@data.json" -H "Content-Type: application/json"  http://localhost:8080/words.json
 HTTP/1.1 200 Created
 ...
 
