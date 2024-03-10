@@ -1,11 +1,11 @@
 package com.ibotta.anagram.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import com.ibotta.anagram.exception.AnagramException;
 import com.ibotta.anagram.exception.InvalidWordException;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AnagramUtilTest {
 

@@ -1,19 +1,5 @@
 package com.ibotta.anagram.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.ibotta.anagram.domain.AnagramMetric;
 import com.ibotta.anagram.exception.AnagramException;
 import com.ibotta.anagram.model.EnglishWord;
@@ -24,6 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class AnagramServiceTest {
@@ -75,7 +70,7 @@ class AnagramServiceTest {
         assertFalse(metrics.isEmpty());
         metrics.forEach(System.out::println);
 
-        final var anagrams = anagramService.findAnagrams(metrics.get(0).getWord(), true);
+        final var anagrams = anagramService.findAnagrams(metrics.getFirst().getWord(), true);
         System.out.println(anagrams);
     }
 
@@ -247,7 +242,7 @@ class AnagramServiceTest {
         final var metrics = anagramService.mostAnagrams();
         assertEquals(1, metrics.size());
 
-        final var metric = metrics.get(0);
+        final var metric = metrics.getFirst();
         assertEquals(3, metric.getCount());
 
         switch (metric.getWord()) {

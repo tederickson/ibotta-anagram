@@ -1,15 +1,11 @@
 package com.ibotta.anagram.model;
 
-import java.util.Objects;
-
 import com.ibotta.anagram.exception.AnagramException;
 import com.ibotta.anagram.util.AnagramUtil;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.Objects;
 
 // The LomBok project annotation takes care of the getters, setters, toString, equals and hash code.
 // Modify your class and the bytecode is updated.

@@ -1,14 +1,5 @@
 package com.ibotta.anagram.service;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.ibotta.anagram.domain.AnagramMetric;
 import com.ibotta.anagram.domain.WordMetric;
 import com.ibotta.anagram.exception.AnagramException;
@@ -22,6 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
 
 @Service
 public class AnagramServiceImpl implements AnagramService {
@@ -86,7 +82,7 @@ public class AnagramServiceImpl implements AnagramService {
         final var anagrams = englishWordRepository.findByAnagramKey(key);
 
         if (!anagrams.isEmpty()) {
-            englishWordRepository.deleteInBatch(anagrams);
+            englishWordRepository.deleteAllInBatch(anagrams);
         }
     }
 
@@ -103,7 +99,7 @@ public class AnagramServiceImpl implements AnagramService {
             Collections.sort(lengths);
 
             metric.setCount(count);
-            metric.setMin(lengths.get(0));
+            metric.setMin(lengths.getFirst());
             metric.setMax(lengths.get(count - 1));
 
             final float total = lengths.stream().reduce(0, Integer::sum);
@@ -128,7 +124,7 @@ public class AnagramServiceImpl implements AnagramService {
 
     @Override
     public boolean areSameAnagram(List<String> words) throws AnagramException {
-        final var anagramKey = AnagramUtil.createKey(words.get(0));
+        final var anagramKey = AnagramUtil.createKey(words.getFirst());
 
         for (var word : words) {
             validateEnglishWord(word);
@@ -177,7 +173,7 @@ public class AnagramServiceImpl implements AnagramService {
         List<EnglishWord> anagrams = englishWordRepository.findByAnagramKey(group.getAnagramKey());
 
         AnagramMetric metric = new AnagramMetric();
-        metric.setWord(anagrams.get(0).getWord());
+        metric.setWord(anagrams.getFirst().getWord());
         metric.setCount(group.getAnagramCount());
 
         return metric;

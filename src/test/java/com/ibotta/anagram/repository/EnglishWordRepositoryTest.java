@@ -1,17 +1,15 @@
 package com.ibotta.anagram.repository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.List;
-
 import com.ibotta.anagram.model.EnglishWord;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
@@ -45,7 +43,7 @@ public class EnglishWordRepositoryTest {
 
         anagrams = englishWordRepository.findByAnagramKey(APPLE_KEY);
         assertEquals(1, anagrams.size());
-        assertEquals(dbEntity, anagrams.get(0));
+        assertEquals(dbEntity, anagrams.getFirst());
     }
 
     @Test
@@ -58,7 +56,7 @@ public class EnglishWordRepositoryTest {
 
         anagrams = englishWordRepository.findAll();
         assertEquals(1, anagrams.size());
-        assertEquals(APPLE_KEY, anagrams.get(0).getAnagramKey());
+        assertEquals(APPLE_KEY, anagrams.getFirst().getAnagramKey());
     }
 
 
@@ -91,7 +89,7 @@ public class EnglishWordRepositoryTest {
 
         final var anagrams = englishWordRepository.findAll();
         assertEquals(1, anagrams.size());
-        assertEquals("apple", anagrams.get(0).getWord());
+        assertEquals("apple", anagrams.getFirst().getWord());
     }
 
     @Test
