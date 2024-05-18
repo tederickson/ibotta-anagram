@@ -104,9 +104,8 @@ class AnagramServiceTest {
 
     @Test
     public void testAddProperNoun() throws AnagramException {
-        List<String> wordList = new ArrayList<>();
-        wordList.add("a");
-        wordList.add("A");
+        List<String> wordList = List.of("a","A");
+
         anagramService.addWords(wordList);
         assertEquals(2, englishWordRepository.count());
 

@@ -2,7 +2,11 @@ package com.ibotta.anagram.model;
 
 import com.ibotta.anagram.exception.AnagramException;
 import com.ibotta.anagram.util.AnagramUtil;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 import java.util.Objects;
@@ -21,6 +25,7 @@ public final class EnglishWord {
     private String anagramKey;
 
     public EnglishWord() {
+        // JPA needs a default constructor
     }
 
     public EnglishWord(String word) throws AnagramException {

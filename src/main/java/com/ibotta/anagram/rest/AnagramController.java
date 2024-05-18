@@ -27,7 +27,7 @@ public class AnagramController {
 
     @PostMapping("/words.json")
     public void addWords(@RequestBody CreateAnagramDigest createAnagramDigest) throws AnagramException {
-        log.info("/words.json " + createAnagramDigest);
+        log.info("/words.json {}", createAnagramDigest);
 
         anagramService.addWords(Arrays.asList(createAnagramDigest.getWords()));
     }
@@ -37,9 +37,9 @@ public class AnagramController {
                                      @RequestParam(value = "limit", required = false) Integer limit,
                                      @RequestParam(value = "allowProperNoun", required = false) boolean allowProperNoun)
             throws AnagramException {
-        log.info("/anagrams/" + word + ".json");
-        log.info("limit: " + limit);
-        log.info("allowProperNoun: " + allowProperNoun);
+        log.info("/anagrams/{}.json", word);
+        log.info("limit: {}", limit);
+        log.info("allowProperNoun: {}", allowProperNoun);
 
         final var digest = new AnagramDigest();
         digest.setAnagrams(anagramService.findAnagrams(word, allowProperNoun));
@@ -63,14 +63,14 @@ public class AnagramController {
 
     @DeleteMapping("/words/{word}.json")
     public void deleteWord(@PathVariable("word") String word) {
-        log.info("deleteWord(" + word + ")");
+        log.info("deleteWord({})", word);
 
         anagramService.remove(word);
     }
 
     @DeleteMapping("/anagrams/{word}")
     public void deleteAllAnagrams(@PathVariable("word") String word) throws AnagramException {
-        log.info("deleteAllAnagrams(" + word + ")");
+        log.info("deleteAllAnagrams({})", word);
 
         anagramService.removeAllAnagramsOf(word);
     }
@@ -84,7 +84,7 @@ public class AnagramController {
 
     @GetMapping("/anagrams/group")
     public List<AnagramMetric> getAnagramGroups(@RequestParam(value = "size", required = false) Integer numAnagrams) {
-        log.info("/anagrams/group/size: " + numAnagrams);
+        log.info("/anagrams/group/size: {}", numAnagrams);
 
         if (numAnagrams == null) {
             return anagramService.mostAnagrams();
@@ -96,7 +96,7 @@ public class AnagramController {
     @PostMapping("/anagrams")
     public boolean determineWordsSameAnagram(@RequestBody CreateAnagramDigest createAnagramDigest)
             throws AnagramException {
-        log.info("/anagrams " + createAnagramDigest);
+        log.info("/anagrams {}", createAnagramDigest);
 
         return anagramService.areSameAnagram(Arrays.asList(createAnagramDigest.getWords()));
     }

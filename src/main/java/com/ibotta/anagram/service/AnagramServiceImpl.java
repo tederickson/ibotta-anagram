@@ -9,7 +9,7 @@ import com.ibotta.anagram.model.EnglishWord;
 import com.ibotta.anagram.repository.AnagramGroupRepository;
 import com.ibotta.anagram.repository.EnglishWordRepository;
 import com.ibotta.anagram.util.AnagramUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -17,17 +17,22 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class AnagramServiceImpl implements AnagramService {
     private final static Set<String> DICTIONARY = new HashSet<>();
+
+    private final EnglishWordRepository englishWordRepository;
+    private final AnagramGroupRepository anagramGroupRepository;
+
     @Value("classpath:static/dictionary.txt")
     Resource dictionary;
-    @Autowired
-    private EnglishWordRepository englishWordRepository;
-    @Autowired
-    private AnagramGroupRepository anagramGroupRepository;
 
     @Override
     public void addWords(List<String> words) throws AnagramException {
@@ -55,7 +60,8 @@ public class AnagramServiceImpl implements AnagramService {
             if (!word.equals(dbWord)) {
                 if (allowProperNoun) {
                     words.add(dbWord);
-                } else if (dbWord.equals(dbWord.toLowerCase())) {
+                }
+                else if (dbWord.equals(dbWord.toLowerCase())) {
                     words.add(dbWord);
                 }
             }
@@ -109,7 +115,8 @@ public class AnagramServiceImpl implements AnagramService {
 
             if (count % 2 == 1) {
                 metric.setMedian(lengths.get(middle));
-            } else {
+            }
+            else {
                 // Average the two middle entries
                 int left = lengths.size() / 2;
                 int right = left + 1;

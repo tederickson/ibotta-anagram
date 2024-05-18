@@ -9,7 +9,6 @@ import com.ibotta.anagram.exception.AnagramException;
 import com.ibotta.anagram.exception.InvalidWordException;
 import com.ibotta.anagram.service.AnagramService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,15 +20,18 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 
 @WebMvcTest(AnagramController.class)
 @ComponentScan(basePackageClasses = AnagramApplication.class)
 public class AnagramControllerTest {
-    private final String[] words = {"finite", "infinity", "dear", "dare", "read", "rare", "rear", "unicorn", "to", "thirteen", "twelve"};
+    private final String[] words = {"finite", "infinity", "dear", "dare", "read", "rare", "rear",
+            "unicorn", "to", "thirteen", "twelve"};
 
     @Autowired
     private MockMvc mvc;
@@ -98,7 +100,7 @@ public class AnagramControllerTest {
         final var content = new ObjectMapper().writeValueAsString(createAnagramDigest);
 
         final var anagrams = List.of(words);
-        Mockito.doThrow(new AnagramException("unit test worked")).when(anagramService).addWords(anagrams);
+        doThrow(new AnagramException("unit test worked")).when(anagramService).addWords(anagrams);
 
         final var builder = post("/words.json").contentType(MediaType.APPLICATION_JSON).content(content);
         mvc.perform(builder).andExpect(status().is5xxServerError());
@@ -185,5 +187,4 @@ public class AnagramControllerTest {
         final var builder = delete("/anagrams/apple").contentType(MediaType.APPLICATION_JSON);
         mvc.perform(builder).andExpect(status().isOk());
     }
-
 }
