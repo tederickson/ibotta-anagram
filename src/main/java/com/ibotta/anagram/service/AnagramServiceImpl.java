@@ -179,11 +179,9 @@ public class AnagramServiceImpl implements AnagramService {
     private AnagramMetric buildAnagramMetric(AnagramGroup group) {
         List<EnglishWord> anagrams = englishWordRepository.findByAnagramKey(group.getAnagramKey());
 
-        AnagramMetric metric = new AnagramMetric();
-        metric.setWord(anagrams.getFirst().getWord());
-        metric.setCount(group.getAnagramCount());
-
-        return metric;
+        return new AnagramMetric(
+                anagrams.getFirst().getWord(),
+                group.getAnagramCount());
     }
 
     // Ensure thread-safe access to the dictionary. Prevent a thread accessing

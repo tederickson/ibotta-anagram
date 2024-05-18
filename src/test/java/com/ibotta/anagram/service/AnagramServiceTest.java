@@ -18,7 +18,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest
 class AnagramServiceTest {
@@ -70,7 +75,7 @@ class AnagramServiceTest {
         assertFalse(metrics.isEmpty());
         metrics.forEach(System.out::println);
 
-        final var anagrams = anagramService.findAnagrams(metrics.getFirst().getWord(), true);
+        final var anagrams = anagramService.findAnagrams(metrics.getFirst().word(), true);
         System.out.println(anagrams);
     }
 
@@ -242,9 +247,9 @@ class AnagramServiceTest {
         assertEquals(1, metrics.size());
 
         final var metric = metrics.getFirst();
-        assertEquals(3, metric.getCount());
+        assertEquals(3, metric.count());
 
-        switch (metric.getWord()) {
+        switch (metric.word()) {
             case "dear":
             case "dare":
             case "read":
@@ -265,7 +270,7 @@ class AnagramServiceTest {
 
         assertEquals(2, metrics.size());
         for (AnagramMetric metric : metrics) {
-            assertTrue(metric.getCount() >= numAnagrams);
+            assertTrue(metric.count() >= numAnagrams);
         }
     }
 
