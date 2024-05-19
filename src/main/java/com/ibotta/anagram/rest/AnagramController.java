@@ -6,6 +6,7 @@ import com.ibotta.anagram.domain.CreateAnagramDigest;
 import com.ibotta.anagram.domain.WordMetric;
 import com.ibotta.anagram.exception.AnagramException;
 import com.ibotta.anagram.service.AnagramService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,18 +29,13 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
+@Tag(name = "Anagram API")
+@RequestMapping("anagrams")
 public class AnagramController {
     // RequiredArgsConstructor allows Spring to use constructor dependency injection
     private final AnagramService anagramService;
 
-    @PostMapping("/words.json")
-    public void addWords(@RequestBody CreateAnagramDigest createAnagramDigest) throws AnagramException {
-        log.info("/words.json {}", createAnagramDigest);
-
-        anagramService.addWords(Arrays.asList(createAnagramDigest.getWords()));
-    }
-
-    @GetMapping("/anagrams/{word}.json")
+    @GetMapping("{word}.json")
     public AnagramDigest getAnagrams(@PathVariable("word") String word,
                                      @RequestParam(value = "limit", required = false) Integer limit,
                                      @RequestParam(value = "allowProperNoun", required = false) boolean allowProperNoun)
@@ -60,35 +57,21 @@ public class AnagramController {
         return digest;
     }
 
-    @DeleteMapping("/words.json")
-    public void deleteAllWords() {
-        log.info("deleteAllWords");
-
-        anagramService.removeAll();
-    }
-
-    @DeleteMapping("/words/{word}.json")
-    public void deleteWord(@PathVariable("word") String word) {
-        log.info("deleteWord({})", word);
-
-        anagramService.remove(word);
-    }
-
-    @DeleteMapping("/anagrams/{word}")
+    @DeleteMapping("{word}")
     public void deleteAllAnagrams(@PathVariable("word") String word) throws AnagramException {
         log.info("deleteAllAnagrams({})", word);
 
         anagramService.removeAllAnagramsOf(word);
     }
 
-    @GetMapping("/anagrams/metrics")
+    @GetMapping("metrics")
     public WordMetric getAnagramMetrics() {
         log.info("getAnagramMetrics");
 
         return anagramService.retrieveWordMetrics();
     }
 
-    @GetMapping("/anagrams/group")
+    @GetMapping("group")
     public List<AnagramMetric> getAnagramGroups(@RequestParam(value = "size", required = false) Integer numAnagrams) {
         log.info("/anagrams/group/size: {}", numAnagrams);
 
@@ -99,7 +82,7 @@ public class AnagramController {
         return anagramService.anagramsWithAtLeast(numAnagrams);
     }
 
-    @PostMapping("/anagrams")
+    @PostMapping()
     public boolean determineWordsSameAnagram(@RequestBody CreateAnagramDigest createAnagramDigest)
             throws AnagramException {
         log.info("/anagrams {}", createAnagramDigest);
