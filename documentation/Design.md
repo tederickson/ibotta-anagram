@@ -15,6 +15,9 @@ But wait - there's more! The app is a fully contained service:
 - Changes to the app can be pushed to production without having to push all portions of the monolith - so many 2001 Space Odyssey references.
 - The JUnit tests are clearly separated in the src/test directory while the application is found in the src/main directory.
 
+## OpenApi Documentation
+Access the [Swagger](http://localhost:8080/swagger-ui/index.html) instead of using CURL.
+
 ## Use a Database
 Since this is a demo use the H2 in-memory database.  A real application would use MySQL, DB2 or Oracle.  Millions of rows per hour is not a concern so I would suggest deploying to Amazon Web Services using MySQL.
 
