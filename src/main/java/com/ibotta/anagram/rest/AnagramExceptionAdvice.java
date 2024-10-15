@@ -3,6 +3,7 @@ package com.ibotta.anagram.rest;
 import com.ibotta.anagram.exception.AnagramException;
 import com.ibotta.anagram.exception.InvalidWordException;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.api.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -14,15 +15,15 @@ public class AnagramExceptionAdvice {
 
     @ExceptionHandler(AnagramException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    String serviceExceptionHandler(AnagramException ex) {
+    ErrorMessage serviceExceptionHandler(AnagramException ex) {
         log.error("Unexpected exception", ex);
-        return ex.getMessage();
+        return new ErrorMessage(ex.getMessage());
     }
 
     @ExceptionHandler(InvalidWordException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String serviceExceptionHandler(InvalidWordException ex) {
+    ErrorMessage serviceExceptionHandler(InvalidWordException ex) {
         log.warn("invalid word", ex);
-        return ex.getMessage();
+        return new ErrorMessage(ex.getMessage());
     }
 }
