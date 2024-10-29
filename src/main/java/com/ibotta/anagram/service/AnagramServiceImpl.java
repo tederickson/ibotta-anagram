@@ -10,6 +10,7 @@ import com.ibotta.anagram.repository.AnagramGroupRepository;
 import com.ibotta.anagram.repository.EnglishWordRepository;
 import com.ibotta.anagram.util.AnagramUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AnagramServiceImpl implements AnagramService {
     private final static Set<String> DICTIONARY = new HashSet<>();
 
@@ -198,12 +200,18 @@ public class AnagramServiceImpl implements AnagramService {
 
     private void initializeDictionary() throws AnagramException {
         try (BufferedReader in = new BufferedReader(new FileReader(dictionary.getFile()))) {
+            long start = System.currentTimeMillis();
             String text = in.readLine();
+            int numWords = 1;
 
             while (text != null) {
                 DICTIONARY.add(text);
                 text = in.readLine();
+                numWords++;
             }
+            long duration = System.currentTimeMillis() - start;
+            log.info("Read {} words from {} in {} microseconds", numWords, dictionary.getFilename(), duration);
+
         } catch (IOException e) {
             throw new AnagramException("unable to read dictionary " + dictionary.getFilename());
         }
