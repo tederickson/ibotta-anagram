@@ -62,14 +62,18 @@ With all tasks - leave the modified code better.  Pull common code into a reusab
 
 ```java
   for(int i=0; i<k; i++) {
-     log.info(databaseRows.get(i).toString())
+     log.info(databaseRows.get(i).toString());
   }
 ```
 replace with
 
 ```java
-​  databaseRows.forEach( row -> log.info( row.toString()))
+databaseRows.forEach(row -> log.info("{}", row));
 ```
+
+## Test Code Coverage
+Run `mvn clean verify`
+Open the [test code coverage](http://localhost:63342/ibotta-anagram/anagram/target/site/jacoco/index.html) after the tests complete.
 
 ## Future Enhancements
 - The dictionary is blocked by synchronization to ensure thread safe access. Special concern is given to the scenario of one thread accessing the dictionary while another thread is initializing the dictionary. A better way is to place the dictionary in a database table and place SQL inserts in /anagram/src/main/resources/data.sql.  The dictionary table is initialized before the application is ready to accept requests.
