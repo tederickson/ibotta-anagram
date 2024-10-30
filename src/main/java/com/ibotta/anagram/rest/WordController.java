@@ -41,7 +41,7 @@ public class WordController {
     }
 
     @DeleteMapping("/words/{word}.json")
-    public void deleteWord(@PathVariable("word") String word) {
+    public void deleteWord(@PathVariable String word) {
         log.info("deleteWord({})", word);
 
         anagramService.remove(word);

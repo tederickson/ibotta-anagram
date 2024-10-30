@@ -36,9 +36,9 @@ public class AnagramController {
     private final AnagramService anagramService;
 
     @GetMapping("{word}.json")
-    public AnagramDigest getAnagrams(@PathVariable("word") String word,
-                                     @RequestParam(value = "limit", required = false) Integer limit,
-                                     @RequestParam(value = "allowProperNoun", required = false) boolean allowProperNoun)
+    public AnagramDigest getAnagrams(@PathVariable String word,
+                                     @RequestParam(required = false) Integer limit,
+                                     @RequestParam(required = false) boolean allowProperNoun)
             throws AnagramException {
         log.info("/anagrams/{}.json", word);
         log.info("limit: {}", limit);
@@ -58,7 +58,7 @@ public class AnagramController {
     }
 
     @DeleteMapping("{word}")
-    public void deleteAllAnagrams(@PathVariable("word") String word) throws AnagramException {
+    public void deleteAllAnagrams(@PathVariable String word) throws AnagramException {
         log.info("deleteAllAnagrams({})", word);
 
         anagramService.removeAllAnagramsOf(word);
